@@ -1,6 +1,19 @@
 version: '3'
 
 services:
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl/certs:/etc/ssl/certs:ro
+      - ./ssl/private:/etc/ssl/private:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - wordpress
+
   db:
     image: mysql:5.7
     volumes:
@@ -16,12 +29,9 @@ services:
     depends_on:
     - db
     image: wordpress:latest
-    ports:
-    - "80:80"
     restart: always
     volumes:
     - ./wp-content:/var/www/html/wp-content
-
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
